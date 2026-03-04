@@ -138,6 +138,27 @@
 </style>
 </head>
 <body>
+
+<!-- PROFILE MODAL -->
+<div id="profile-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(7,9,14,0.92);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="background:#13161e;border:1px solid #252a38;border-radius:6px;padding:36px 40px;width:100%;max-width:380px;position:relative;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:#e8eaf0;margin-bottom:4px;">ПРЕДСТАВЬТЕСЬ</div>
+    <div style="font-size:12px;color:#6b7290;margin-bottom:24px;font-family:'DM Mono',monospace;">Данные сохраняются в браузере</div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Имя</div>
+        <input id="profile-name" type="text" placeholder="Иван Иванов" style="width:100%;background:#0d0f14;border:1px solid #252a38;border-radius:3px;color:#e8eaf0;font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;box-sizing:border-box;" onkeydown="profileKeydown(event)">
+      </div>
+      <div>
+        <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Email</div>
+        <input id="profile-email" type="email" placeholder="ivan@company.com" style="width:100%;background:#0d0f14;border:1px solid #252a38;border-radius:3px;color:#e8eaf0;font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;outline:none;box-sizing:border-box;" onkeydown="profileKeydown(event)">
+      </div>
+      <div id="profile-error" style="font-size:11px;color:#e85d26;font-family:'DM Mono',monospace;display:none;">Пожалуйста, заполните оба поля</div>
+      <button onclick="saveProfile()" style="margin-top:4px;padding:11px;background:#f0a500;border:none;border-radius:3px;color:#000;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.07em;">ВОЙТИ В ROADMAP</button>
+    </div>
+  </div>
+</div>
+
 <div class="container">
 
 <header>
@@ -151,6 +172,16 @@
     <div class="stat"><span class="stat-val">BAF</span><span class="stat-label">Платформа с апреля</span></div>
   </div>
 </header>
+
+<!-- USER CHIP -->
+<div id="user-chip" style="display:none;position:fixed;top:16px;right:20px;z-index:500;align-items:center;gap:8px;background:#13161e;border:1px solid #252a38;border-radius:20px;padding:6px 14px 6px 8px;cursor:pointer;" onclick="showProfileEdit()" title="Изменить профиль">
+  <div id="user-avatar" style="width:28px;height:28px;border-radius:50%;background:#f0a500;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;color:#000;flex-shrink:0;"></div>
+  <div style="display:flex;flex-direction:column;gap:1px;">
+    <div id="user-chip-name" style="font-size:11px;font-weight:600;color:#e8eaf0;font-family:'DM Sans',sans-serif;white-space:nowrap;"></div>
+    <div id="user-chip-email" style="font-size:9px;color:#6b7290;font-family:'DM Mono',monospace;white-space:nowrap;"></div>
+  </div>
+</div>
+
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('march', this)">Март 2026</button>
@@ -190,7 +221,7 @@
   <div class="period-label">Неделя 1 — Аудит + Быстрые доходные задачи</div>
   <div class="tasks">
 
-    <div class="task-card service">
+    <div data-taskid="task-1" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Аудит конфигурации — старт, TODO-лист технического долга</div>
         <div class="task-desc">Программист начинает фоновый аудит. Цель марта: зафиксировать реестр технического долга, расставить приоритеты. В моменты простоя — рефакторинг блоков.</div>
@@ -206,7 +237,7 @@
       </div>
     </div>
 
-    <div class="task-card income urgent">
+    <div data-taskid="task-2" onclick="openTask(this)" class="task-card income urgent">
       <div class="task-main">
         <div class="task-title"><span class="fire">🔥</span>Отборы для рассылки в ТГ-боте (Постоянный клиент, Отложенный спрос, Город)</div>
         <div class="task-desc">Кнопки автозаполнения клиентов по отборам — быстрая задача (1 день DEV). Даёт инструмент для целевых допродаж по базе прямо в марте.</div>
@@ -222,7 +253,7 @@
       </div>
     </div>
 
-    <div class="task-card income urgent">
+    <div data-taskid="task-3" onclick="openTask(this)" class="task-card income urgent">
       <div class="task-main">
         <div class="task-title"><span class="fire">🔥</span>Отчёт по исключённым работам + Отложенный спрос</div>
         <div class="task-desc">Карточка авто фиксирует что предлагали, но клиент отказался. Отчёт позволяет консультанту видеть «горячий» отложенный спрос и возвращаться к нему при следующем визите.</div>
@@ -244,7 +275,7 @@
   <div class="period-label">Неделя 2 — Сервисная книга (главная доходная задача марта)</div>
   <div class="tasks">
 
-    <div class="task-card income urgent">
+    <div data-taskid="task-4" onclick="openTask(this)" class="task-card income urgent">
       <div class="task-main">
         <div class="task-title"><span class="fire">🔥</span>Сервисная книга — допродажа услуг и выполнение регламентов ТО</div>
         <div class="task-desc">Набор работ по пробегу/времени последнего обслуживания. Система опрашивает клиента при записи, актуализирует статусы и предлагает консультанту что допродать. Прямое влияние на средний чек по всем 12 точкам.</div>
@@ -261,7 +292,7 @@
       </div>
     </div>
 
-    <div class="task-card service">
+    <div data-taskid="task-5" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">А-Банк клиент-банк — интеграция</div>
         <div class="task-desc">Сервисная задача — убирает ручные операции по платежам. Снижает расхождения в учёте оплат.</div>
@@ -283,7 +314,7 @@
   <div class="period-label">Неделя 3–4 — Мелкие баги + Процессный фикс (доставка) + Регламенты</div>
   <div class="tasks">
 
-    <div class="task-card service">
+    <div data-taskid="task-6" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Мелкие баги — пакет 10–20 штук</div>
         <div class="task-desc">Планово закрыть накопленный хвост мелких багов. Лучше в конце месяца, когда основные задачи выполнены — DEV разгружен и концентрируется на фиксах.</div>
@@ -298,7 +329,7 @@
       </div>
     </div>
 
-    <div class="task-card income urgent">
+    <div data-taskid="task-7" onclick="openTask(this)" class="task-card income urgent">
       <div class="task-main">
         <div class="task-title"><span class="fire">🔥</span>Процессный фикс: автоматический расчёт стоимости доставки при закупке запчастей</div>
         <div class="task-desc">Критический баг маржи: продавцы забывают прибавить стоимость доставки к стоимости товара — проседает маржа по всей сети. Решение: автоподстановка стоимости доставки при закупке у не-ТОП поставщиков. Задача уже есть в бэклоге, запланирована на апрель — целесообразно взять в марте.</div>
@@ -315,7 +346,7 @@
       </div>
     </div>
 
-    <div class="task-card service">
+    <div data-taskid="task-8" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Регламент приёмки + фиксация в 1С — пилот на 2 точках</div>
         <div class="task-desc">Менеджер описывает стандарт приёмки: что, кем и когда вносится в 1С. Чек-лист для мастера-приёмщика. Пилот — 2 точки, в Q2 — тиражирование на все 12.</div>
@@ -330,7 +361,7 @@
       </div>
     </div>
 
-    <div class="task-card service">
+    <div data-taskid="task-9" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Итоговый отчёт марта для СОО/СЕО + roadmap Q2</div>
         <div class="task-desc">Зафиксировать: что сделано, какой измеримый эффект. Подготовить структуру roadmap Q2 с учётом начала перехода на BAF.</div>
@@ -394,7 +425,7 @@
   <div class="period-label">Апрель — Старт BAF + Логика нарядов + Маржинальный контроль</div>
   <div class="tasks">
 
-    <div class="task-card bgwork">
+    <div data-taskid="task-10" onclick="openTask(this)" class="task-card bgwork">
       <div class="task-main">
         <div class="task-title">Переход на платформу BAF — старт</div>
         <div class="task-desc">Фоновая работа на весь квартал. Параллельно: украинизация — новый функционал сразу на укр. языке, при касании объекта — переводим интерфейс.</div>
@@ -409,7 +440,7 @@
       </div>
     </div>
 
-    <div class="task-card service urgent">
+    <div data-taskid="task-11" onclick="openTask(this)" class="task-card service urgent">
       <div class="task-main">
         <div class="task-title"><span class="fire">🔥</span>Автоматизация статусов нарядов — починить логику</div>
         <div class="task-desc">Анализ текущего поведения заказ-наряда, построение карты маршрута статусов. Устранение ситуации когда из заблокированного статуса можно провести наряд сразу в заказ запчастей без обновления сметы.</div>
@@ -426,7 +457,7 @@
       </div>
     </div>
 
-    <div class="task-card income">
+    <div data-taskid="task-12" onclick="openTask(this)" class="task-card income">
       <div class="task-main">
         <div class="task-title">Механизм проверки реальной себестоимости и наценки (ручная цена)</div>
         <div class="task-desc">Контроль маржи когда цена вставляется вручную от несистемного поставщика. Дополняет фикс доставки из марта — полное закрытие темы маржинальности на закупке.</div>
@@ -442,7 +473,7 @@
       </div>
     </div>
 
-    <div class="task-card client">
+    <div data-taskid="task-13" onclick="openTask(this)" class="task-card client">
       <div class="task-main">
         <div class="task-title">API — перенос корзины из интернет-магазина в наряд</div>
         <div class="task-desc">По кнопке из заказа получаем товарный состав по API. Консультант не вбивает позиции вручную — ускорение оформления, меньше ошибок.</div>
@@ -464,7 +495,7 @@
   <div class="period-label">Май — BI / PowerBI + Роли и права + Объединение нарядов</div>
   <div class="tasks">
 
-    <div class="task-card service urgent">
+    <div data-taskid="task-14" onclick="openTask(this)" class="task-card service urgent">
       <div class="task-main">
         <div class="task-title"><span class="fire">🔥</span>Отдельная БД (PostgreSQL) + интеграция с PowerBI</div>
         <div class="task-desc">Создание отдельной базы данных или веб-сервиса для интеграции с PowerBI. Это фундамент прозрачности оборота для СОО/СЕО — дашборды по 12 точкам в реальном времени без ручных выгрузок.</div>
@@ -481,7 +512,7 @@
       </div>
     </div>
 
-    <div class="task-card service">
+    <div data-taskid="task-15" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Организация ролей и прав доступа для пользователей</div>
         <div class="task-desc">Чёткие роли: кто что видит и может делать в 1С. Устраняет ситуации «работают как хотят». Основа для масштабирования — новые сотрудники получают правильные права сразу.</div>
@@ -497,7 +528,7 @@
       </div>
     </div>
 
-    <div class="task-card client">
+    <div data-taskid="task-16" onclick="openTask(this)" class="task-card client">
       <div class="task-main">
         <div class="task-title">Объединение нескольких нарядов в одну финальную печатную форму</div>
         <div class="task-desc">Клиент получает один документ при выдаче авто — даже если ремонт вёлся на разных сервисах. Снижает путаницу, повышает доверие клиента.</div>
@@ -513,7 +544,7 @@
       </div>
     </div>
 
-    <div class="task-card service">
+    <div data-taskid="task-17" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Тиражирование регламентов на все 12 точек + База знаний</div>
         <div class="task-desc">Перенести регламент приёмки (март) + новые регламенты в структурированную базу знаний. Обучение руководителей. Цель — 50% ключевых процессов доступны в базе знаний.</div>
@@ -534,7 +565,7 @@
   <div class="period-label">Июнь — Масштабирование + Автоматизация поставщиков + ТГ-бот v2</div>
   <div class="tasks">
 
-    <div class="task-card service">
+    <div data-taskid="task-18" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Автоматизация поступления товаров от системных поставщиков (API)</div>
         <div class="task-desc">Поставщики с API — автоприходование. Убирает ручной ввод товарных поступлений, ускоряет складской учёт. Снижает ошибки при приёмке запчастей.</div>
@@ -550,7 +581,7 @@
       </div>
     </div>
 
-    <div class="task-card client">
+    <div data-taskid="task-19" onclick="openTask(this)" class="task-card client">
       <div class="task-main">
         <div class="task-title">Обновление логики и визуализации ТГ-бота</div>
         <div class="task-desc">Редизайн и улучшение UX клиентского бота. Связка городов с подразделениями. Готовит бот к масштабированию при открытии новых точек.</div>
@@ -566,7 +597,7 @@
       </div>
     </div>
 
-    <div class="task-card service">
+    <div data-taskid="task-20" onclick="openTask(this)" class="task-card service">
       <div class="task-main">
         <div class="task-title">Пакет запуска новой точки + Итоговый отчёт Q2</div>
         <div class="task-desc">Стандартизированный чек-лист открытия: настройки 1С/BAF, права доступа, регламенты, доступ к BI. Отчёт с подтверждённым экономическим эффектом Q2 для СОО/СЕО.</div>
@@ -614,13 +645,334 @@
 </footer>
 
 </div>
+<!-- MODAL -->
+<div id="task-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,9,14,0.88);backdrop-filter:blur(6px);overflow-y:auto;" onclick="closeModalOutside(event)">
+  <div id="modal-box" style="max-width:600px;margin:40px auto 60px;background:#13161e;border:1px solid #252a38;border-radius:6px;position:relative;overflow:hidden;">
+    <div id="modal-header-bar" style="height:3px;"></div>
+    <div style="padding:22px 26px 16px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <div id="modal-tags" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+        <button onclick="closeModal()" style="background:none;border:none;color:#6b7290;cursor:pointer;font-size:18px;line-height:1;padding:2px 0 0 8px;flex-shrink:0;">✕</button>
+      </div>
+      <div id="modal-title" style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#e8eaf0;margin-top:10px;line-height:1.45;"></div>
+      <div id="modal-duration" style="font-family:'DM Mono',monospace;font-size:10px;color:#6b7290;margin-top:5px;"></div>
+    </div>
+
+    <div style="padding:0 26px 16px;border-bottom:1px solid #1a1e29;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Статус</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <button class="status-btn" data-s="backlog"     onclick="setStatus('backlog')"     style="text-align:left;padding:6px 11px;border-radius:3px;border:1px solid #252a38;background:#0d0f14;color:#6b7290;font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .15s;">📋 Бэклог</button>
+            <button class="status-btn" data-s="inprogress"  onclick="setStatus('inprogress')"  style="text-align:left;padding:6px 11px;border-radius:3px;border:1px solid #252a38;background:#0d0f14;color:#6b7290;font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .15s;">⚡ В работе</button>
+            <button class="status-btn" data-s="review"      onclick="setStatus('review')"      style="text-align:left;padding:6px 11px;border-radius:3px;border:1px solid #252a38;background:#0d0f14;color:#6b7290;font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .15s;">👁 На проверке</button>
+            <button class="status-btn" data-s="done"        onclick="setStatus('done')"        style="text-align:left;padding:6px 11px;border-radius:3px;border:1px solid #252a38;background:#0d0f14;color:#6b7290;font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .15s;">✅ Готово</button>
+            <button class="status-btn" data-s="blocked"     onclick="setStatus('blocked')"     style="text-align:left;padding:6px 11px;border-radius:3px;border:1px solid #252a38;background:#0d0f14;color:#6b7290;font-family:'DM Mono',monospace;font-size:10.5px;cursor:pointer;transition:all .15s;">🚫 Заблокировано</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Прогресс</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <input type="range" id="progress-range" min="0" max="100" value="0" oninput="updateProgress(this.value)" style="flex:1;accent-color:#f0a500;cursor:pointer;height:4px;">
+              <span id="progress-val" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#f0a500;min-width:46px;text-align:right;">0%</span>
+            </div>
+            <div style="height:5px;background:#1a1e29;border-radius:3px;overflow:hidden;">
+              <div id="progress-bar-modal" style="height:100%;background:#f0a500;border-radius:3px;width:0%;transition:width .2s;"></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Срок</div>
+            <input type="date" id="modal-deadline" onchange="saveField('deadline', this.value)" style="width:100%;background:#0d0f14;border:1px solid #252a38;border-radius:3px;color:#e8eaf0;font-family:'DM Mono',monospace;font-size:12px;padding:6px 10px;outline:none;box-sizing:border-box;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:16px 26px;border-bottom:1px solid #1a1e29;">
+      <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Описание задачи</div>
+      <div id="modal-orig-desc" style="font-size:12px;color:#4a5070;line-height:1.6;margin-bottom:10px;padding:9px 11px;background:#0a0c12;border-radius:3px;border-left:2px solid #2a2f40;"></div>
+      <textarea id="modal-desc" placeholder="Добавить детали, ТЗ, ссылки, заметки..." oninput="saveField('desc', this.value)" style="width:100%;min-height:80px;background:#0d0f14;border:1px solid #252a38;border-radius:3px;color:#e8eaf0;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 11px;resize:vertical;outline:none;line-height:1.5;box-sizing:border-box;"></textarea>
+    </div>
+
+    <div style="padding:16px 26px 22px;">
+      <div style="font-size:10px;color:#6b7290;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Комментарии</div>
+      <div id="comments-list" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;max-height:200px;overflow-y:auto;"></div>
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <textarea id="new-comment" placeholder="Написать комментарий..." onkeydown="commentKeydown(event)" style="flex:1;min-height:56px;background:#0d0f14;border:1px solid #252a38;border-radius:3px;color:#e8eaf0;font-family:'DM Sans',sans-serif;font-size:12.5px;padding:8px 11px;resize:none;outline:none;line-height:1.5;box-sizing:border-box;"></textarea>
+        <button onclick="addComment()" style="padding:8px 14px;background:#f0a500;border:none;border-radius:3px;color:#000;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.06em;white-space:nowrap;">ДОБАВИТЬ</button>
+      </div>
+      <div style="font-size:10px;color:#3a3f52;margin-top:5px;font-family:'DM Mono',monospace;">Ctrl+Enter для быстрой отправки</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .task-card { cursor: pointer; }
+  .task-card:hover { background: var(--surface2) !important; transform: translateY(-1px); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+  .status-badge { display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:'DM Mono',monospace;padding:1px 7px;border-radius:2px;margin-top:4px;letter-spacing:.04em; }
+  .sb-backlog    { background:rgba(107,114,144,.12);color:#6b7290;border:1px solid rgba(107,114,144,.2); }
+  .sb-inprogress { background:rgba(240,165,0,.12);color:#f0a500;border:1px solid rgba(240,165,0,.25); }
+  .sb-review     { background:rgba(124,106,247,.12);color:#7c6af7;border:1px solid rgba(124,106,247,.25); }
+  .sb-done       { background:rgba(62,207,178,.12);color:#3ecfb2;border:1px solid rgba(62,207,178,.25); }
+  .sb-blocked    { background:rgba(232,93,38,.12);color:#e85d26;border:1px solid rgba(232,93,38,.25); }
+
+  .progress-mini { height:2px;border-radius:2px;background:#1a1e29;margin-top:5px;overflow:hidden; }
+  .progress-mini-fill { height:100%;border-radius:2px;background:#f0a500; }
+
+  .status-btn:hover { opacity:.85; }
+  .sactive-backlog    { border-color:#6b7290 !important; color:#c0c8d8 !important; background:rgba(107,114,144,.12) !important; }
+  .sactive-inprogress { border-color:#f0a500 !important; color:#f0a500 !important; background:rgba(240,165,0,.1) !important; }
+  .sactive-review     { border-color:#7c6af7 !important; color:#7c6af7 !important; background:rgba(124,106,247,.1) !important; }
+  .sactive-done       { border-color:#3ecfb2 !important; color:#3ecfb2 !important; background:rgba(62,207,178,.1) !important; }
+  .sactive-blocked    { border-color:#e85d26 !important; color:#e85d26 !important; background:rgba(232,93,38,.1) !important; }
+
+  .comment-item { background:#0a0c12;border-radius:3px;padding:9px 11px;border-left:2px solid #252a38; }
+  .comment-meta { font-size:9.5px;color:#3a3f52;font-family:'DM Mono',monospace;margin-bottom:3px;display:flex;justify-content:space-between; }
+  .comment-text { font-size:12px;color:#a0a8c0;line-height:1.55; }
+  .comment-del { background:none;border:none;color:#3a3f52;cursor:pointer;font-size:11px;padding:0; }
+  .comment-del:hover { color:#e85d26; }
+
+  #task-modal textarea:focus, #task-modal input:focus { border-color:#3a3f52 !important; }
+</style>
+
 <script>
+// ---- Tab switching ----
 function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + tab).classList.add('active');
   el.classList.add('active');
 }
+
+// ---- User profile (localStorage) ----
+let currentUser = null;
+
+function initProfile() {
+  const saved = localStorage.getItem('rm_user');
+  if (saved) {
+    try { currentUser = JSON.parse(saved); showUserChip(); }
+    catch(e) { showProfileModal(); }
+  } else {
+    showProfileModal();
+  }
+}
+
+function showProfileModal() {
+  const m = document.getElementById('profile-modal');
+  m.style.display = 'flex';
+  if (currentUser) {
+    document.getElementById('profile-name').value = currentUser.name || '';
+    document.getElementById('profile-email').value = currentUser.email || '';
+  }
+  setTimeout(() => document.getElementById('profile-name').focus(), 100);
+}
+
+function saveProfile() {
+  const name  = document.getElementById('profile-name').value.trim();
+  const email = document.getElementById('profile-email').value.trim();
+  const errEl = document.getElementById('profile-error');
+  if (!name || !email) { errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  currentUser = { name, email };
+  localStorage.setItem('rm_user', JSON.stringify(currentUser));
+  document.getElementById('profile-modal').style.display = 'none';
+  showUserChip();
+}
+
+function profileKeydown(e) { if (e.key === 'Enter') saveProfile(); }
+
+function showUserChip() {
+  if (!currentUser) return;
+  const chip = document.getElementById('user-chip');
+  chip.style.display = 'flex';
+  document.getElementById('user-chip-name').textContent = currentUser.name;
+  document.getElementById('user-chip-email').textContent = currentUser.email;
+  const initials = currentUser.name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('user-avatar').textContent = initials;
+}
+
+function showProfileEdit() { showProfileModal(); }
+
+// ---- Task data store ----
+const taskStore = {};
+function getTask(id) {
+  if (!taskStore[id]) taskStore[id] = { status: 'backlog', progress: 0, desc: '', deadline: '', comments: [] };
+  return taskStore[id];
+}
+
+let currentTaskId = null;
+
+// ---- Open modal ----
+function openTask(cardEl) {
+  if (!currentUser) { showProfileModal(); return; }
+  const id = cardEl.dataset.taskid;
+  currentTaskId = id;
+  const data = getTask(id);
+
+  const titleEl = cardEl.querySelector('.task-title');
+  const descEl  = cardEl.querySelector('.task-desc');
+  const durEl   = cardEl.querySelector('.duration');
+  const tagsEl  = cardEl.querySelector('.tags');
+
+  document.getElementById('modal-title').textContent = titleEl ? titleEl.textContent.replace('🔥','').trim() : '';
+  document.getElementById('modal-orig-desc').textContent = descEl ? descEl.textContent : '';
+  document.getElementById('modal-duration').textContent = durEl ? '⏱ ' + durEl.textContent : '';
+  document.getElementById('modal-tags').innerHTML = tagsEl ? tagsEl.innerHTML : '';
+
+  const classes = [...cardEl.classList];
+  const colorMap = { income: '#3ecfb2', service: '#7c6af7', client: '#e85d26', bgwork: '#3a3f52', urgent: '#f0a500' };
+  let barColor = '#f0a500';
+  for (const [k, v] of Object.entries(colorMap)) { if (classes.includes(k)) { barColor = v; break; } }
+  document.getElementById('modal-header-bar').style.background = barColor;
+
+  document.getElementById('progress-range').value = data.progress;
+  document.getElementById('progress-val').textContent = data.progress + '%';
+  document.getElementById('progress-bar-modal').style.width = data.progress + '%';
+  document.getElementById('modal-desc').value = data.desc;
+  document.getElementById('modal-deadline').value = data.deadline;
+
+  document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.className = btn.className.replace(/sactive-[a-z]+/g, '').trim();
+    if (btn.dataset.s === data.status) btn.classList.add('sactive-' + data.status);
+  });
+
+  renderComments(data.comments);
+  document.getElementById('task-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('task-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  currentTaskId = null;
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('task-modal')) closeModal();
+}
+
+// ---- Status ----
+const statusLabels = {
+  backlog: '📋 Бэклог', inprogress: '⚡ В работе',
+  review: '👁 На проверке', done: '✅ Готово', blocked: '🚫 Заблокировано'
+};
+
+function setStatus(s) {
+  if (!currentTaskId) return;
+  getTask(currentTaskId).status = s;
+  document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.className = btn.className.replace(/sactive-[a-z]+/g, '').trim();
+    if (btn.dataset.s === s) btn.classList.add('sactive-' + s);
+  });
+  updateCardBadge(currentTaskId);
+}
+
+// ---- Progress ----
+function updateProgress(val) {
+  if (!currentTaskId) return;
+  getTask(currentTaskId).progress = parseInt(val);
+  document.getElementById('progress-val').textContent = val + '%';
+  document.getElementById('progress-bar-modal').style.width = val + '%';
+  updateCardBadge(currentTaskId);
+}
+
+function saveField(field, val) {
+  if (!currentTaskId) return;
+  getTask(currentTaskId)[field] = val;
+}
+
+// ---- Comments ----
+function addComment() {
+  if (!currentTaskId || !currentUser) return;
+  const ta = document.getElementById('new-comment');
+  const text = ta.value.trim();
+  if (!text) return;
+  const data = getTask(currentTaskId);
+  const now = new Date();
+  const ts = now.toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  data.comments.push({ text, ts, id: Date.now(), author: currentUser.name, email: currentUser.email });
+  ta.value = '';
+  renderComments(data.comments);
+}
+
+function deleteComment(cid) {
+  if (!currentTaskId) return;
+  const data = getTask(currentTaskId);
+  const comment = data.comments.find(c => c.id === cid);
+  if (comment && currentUser && comment.email !== currentUser.email) {
+    alert('Можно удалять только свои комментарии'); return;
+  }
+  data.comments = data.comments.filter(c => c.id !== cid);
+  renderComments(data.comments);
+}
+
+function commentKeydown(e) {
+  if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); addComment(); }
+}
+
+function getAvatarColor(str) {
+  const colors = ['#f0a500','#3ecfb2','#7c6af7','#e85d26','#4a9eff','#e85d9a','#5dcfb2'];
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function renderComments(comments) {
+  const list = document.getElementById('comments-list');
+  if (!comments.length) {
+    list.innerHTML = '<div style="font-size:11px;color:#3a3f52;font-family:DM Mono,monospace;padding:4px 0;">Нет комментариев</div>';
+    return;
+  }
+  list.innerHTML = comments.map(function(c) {
+    const initials = (c.author || 'U').split(' ').map(function(w){ return w[0]; }).slice(0,2).join('').toUpperCase();
+    const avatarColor = getAvatarColor(c.email || c.author || '');
+    const isOwn = currentUser && c.email === currentUser.email;
+    const delBtn = isOwn ? '<button class="comment-del" onclick="deleteComment(' + c.id + ')" title="Удалить">✕</button>' : '';
+    const safeText = c.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+    return '<div class="comment-item">'
+      + '<div style="display:flex;gap:9px;align-items:flex-start;">'
+      + '<div style="width:26px;height:26px;border-radius:50%;background:' + avatarColor + ';display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:11px;color:#000;flex-shrink:0;margin-top:1px;">' + initials + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div class="comment-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">'
+      + '<span style="color:#a0a8c0;font-weight:600;">' + (c.author || 'Аноним') + '</span>'
+      + '<span style="color:#3a3f52;">' + (c.email || '') + '</span>'
+      + '<span style="color:#3a3f52;margin-left:4px;">' + c.ts + '</span>'
+      + '<span style="margin-left:auto;">' + delBtn + '</span>'
+      + '</div>'
+      + '<div class="comment-text">' + safeText + '</div>'
+      + '</div></div></div>';
+  }).join('');
+}
+
+// ---- Update card badge ----
+function updateCardBadge(id) {
+  const card = document.querySelector('[data-taskid="' + id + '"]');
+  if (!card) return;
+  const data = getTask(id);
+  const old = card.querySelector('.task-status-row');
+  if (old) old.remove();
+  const row = document.createElement('div');
+  row.className = 'task-status-row';
+  row.style.cssText = 'margin-top:6px;display:flex;align-items:center;gap:8px;';
+  const badge = document.createElement('span');
+  badge.className = 'status-badge sb-' + data.status;
+  badge.textContent = statusLabels[data.status] || data.status;
+  row.appendChild(badge);
+  if (data.progress > 0) {
+    const prog = document.createElement('div');
+    prog.style.cssText = 'flex:1;max-width:80px;';
+    prog.innerHTML = '<div class="progress-mini"><div class="progress-mini-fill" style="width:' + data.progress + '%"></div></div>'
+      + '<div style="font-size:9px;color:#6b7290;font-family:DM Mono,monospace;margin-top:2px;">' + data.progress + '%</div>';
+    row.appendChild(prog);
+  }
+  const taskMain = card.querySelector('.task-main');
+  if (taskMain) taskMain.appendChild(row);
+}
+
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+window.addEventListener('load', initProfile);
 </script>
 </body>
 </html>
