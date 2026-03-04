@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap — Digital Operations Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e29;
+    --border: #252a38;
+    --accent: #f0a500;
+    --accent2: #e85d26;
+    --accent3: #3ecfb2;
+    --text: #e8eaf0;
+    --muted: #6b7290;
+    --c-income: #3ecfb2;
+    --c-service: #7c6af7;
+    --c-client: #e85d26;
+    --c-bg: #f0a500;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; opacity: 0.4; }
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  header { padding: 48px 0 28px; border-bottom: 1px solid var(--border); }
+  .badge { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: var(--accent); background: rgba(240,165,0,0.1); border: 1px solid rgba(240,165,0,0.25); padding: 4px 12px; border-radius: 2px; display: inline-block; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 6vw, 60px); letter-spacing: 0.04em; line-height: 1; margin-top: 10px; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .stats-row { display: flex; gap: 28px; margin-top: 24px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--accent3); letter-spacing: 0.05em; }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .tabs { display: flex; gap: 4px; margin: 28px 0 0; }
+  .tab { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 22px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 18px 0 4px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; padding-top: 4px; }
+
+  .period-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin: 26px 0 10px; display: flex; align-items: center; gap: 12px; }
+  .period-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .tasks { display: flex; flex-direction: column; gap: 8px; }
+
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .task-card:hover { background: var(--surface2); }
+  .task-card.income  { border-left-color: var(--c-income); }
+  .task-card.service { border-left-color: var(--c-service); }
+  .task-card.client  { border-left-color: var(--c-client); }
+  .task-card.bgwork  { border-left-color: #3a3f52; }
+  .task-card.urgent  { border-left-color: var(--accent); box-shadow: 0 0 0 1px rgba(240,165,0,0.15); }
+
+  .task-main { display: flex; flex-direction: column; gap: 5px; }
+  .task-title { font-size: 13.5px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .task-title .fire { color: var(--accent); margin-right: 4px; }
+  .task-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+  .task-comment { font-size: 11px; color: #4a5070; font-style: italic; margin-top: 2px; }
+
+  .task-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; min-width: 150px; }
+  .tags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+  .tag { font-size: 9.5px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; }
+  .tag-income  { background: rgba(62,207,178,0.12); color: var(--c-income); border: 1px solid rgba(62,207,178,0.25); }
+  .tag-service { background: rgba(124,106,247,0.12); color: var(--c-service); border: 1px solid rgba(124,106,247,0.25); }
+  .tag-client  { background: rgba(232,93,38,0.12); color: var(--c-client); border: 1px solid rgba(232,93,38,0.25); }
+  .tag-bg      { background: rgba(58,63,82,0.4); color: #4a5070; border: 1px solid #2a2f40; }
+  .tag-mgr     { background: rgba(240,165,0,0.1); color: var(--accent); border: 1px solid rgba(240,165,0,0.2); }
+  .tag-dev     { background: rgba(232,93,38,0.08); color: #a06050; border: 1px solid rgba(232,93,38,0.15); }
+  .tag-bug     { background: rgba(240,0,0,0.1); color: #e05050; border: 1px solid rgba(240,0,0,0.2); }
+
+  .duration { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+
+  .effort-row { display: flex; gap: 8px; align-items: center; }
+  .effort-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .effort-bar-wrap { width: 40px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .effort-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+  .effort-bar.dev { background: var(--c-service); }
+  .effort-label { font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .profit { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 9px; border-radius: 2px; background: rgba(62,207,178,0.08); border: 1px solid rgba(62,207,178,0.18); color: var(--accent3); white-space: nowrap; }
+  .profit.amber { background: rgba(240,165,0,0.08); border-color: rgba(240,165,0,0.2); color: var(--accent); }
+
+  .load-summary { margin: 24px 0 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px 22px; display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .load-title { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+  .load-block { display: flex; flex-direction: column; gap: 5px; min-width: 140px; }
+  .load-name { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .load-bar-wrap { width: 100%; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 120px; }
+  .load-bar-fill { height: 100%; border-radius: 3px; }
+  .load-bar-fill.mgr { background: var(--accent); }
+  .load-bar-fill.dev { background: var(--c-service); }
+  .load-pct { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text); }
+
+  .effect-box { margin: 22px 0; border: 1px solid rgba(62,207,178,0.18); border-radius: 4px; background: rgba(62,207,178,0.03); padding: 14px 22px; display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .effect-title { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.12em; color: var(--accent3); text-transform: uppercase; white-space: nowrap; }
+  .effect-items { display: flex; gap: 20px; flex-wrap: wrap; }
+  .effect-item { display: flex; flex-direction: column; gap: 1px; }
+  .effect-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent3); }
+  .effect-desc { font-size: 10px; color: var(--muted); }
+
+  .kr-section { margin-top: 28px; margin-bottom: 8px; }
+  .kr-title { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .kr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .kr-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; }
+  .kr-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; color: var(--accent); }
+  .kr-num.g { color: var(--accent3); }
+  .kr-desc { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+  .alert-box { margin: 16px 0; background: rgba(240,165,0,0.06); border: 1px solid rgba(240,165,0,0.25); border-radius: 4px; padding: 12px 18px; font-size: 12px; color: #b08030; line-height: 1.5; }
+  .alert-box strong { color: var(--accent); }
+
+  footer { margin: 40px 0 28px; border-top: 1px solid var(--border); padding-top: 18px; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  @media (max-width: 640px) {
+    .task-card { grid-template-columns: 1fr; }
+    .task-meta { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="badge">Digital Operations · Автосеть · 12 точек · На основе реального бэклога</div>
+  <h1>ROAD<span>MAP</span></h1>
+  <div class="subtitle">Digital Operations & Business Systems Manager — Март 2026 + Q2 (Апрель–Июнь)</div>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-val">12</span><span class="stat-label">Автосервисов</span></div>
+    <div class="stat"><span class="stat-val">80%</span><span class="stat-label">Загрузка менеджера</span></div>
+    <div class="stat"><span class="stat-val">80%</span><span class="stat-label">Загрузка DEV 1С</span></div>
+    <div class="stat"><span class="stat-val">BAF</span><span class="stat-label">Платформа с апреля</span></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('march', this)">Март 2026</button>
+  <button class="tab" onclick="switchTab('q2', this)">Q2 · Апрель–Июнь</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-income)"></div>Доходный</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-service)"></div>Сервисный</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-client)"></div>Клиентский</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3a3f52"></div>Фоновый</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>🔥 Срочный/Приоритет</div>
+</div>
+
+<!-- ===== МАРТ ===== -->
+<div class="panel active" id="panel-march">
+
+  <div class="load-summary">
+    <span class="load-title">Загрузка / Март</span>
+    <div class="load-block">
+      <div class="load-name">Менеджер (вы) — приоритизация, ТЗ, тестирование, регламенты</div>
+      <div class="load-bar-wrap"><div class="load-bar-fill mgr" style="width:80%"></div></div>
+      <div class="load-pct">~80%</div>
+    </div>
+    <div class="load-block">
+      <div class="load-name">Программист 1С — разработка по бэклогу</div>
+      <div class="load-bar-wrap"><div class="load-bar-fill dev" style="width:80%"></div></div>
+      <div class="load-pct">~80%</div>
+    </div>
+  </div>
+
+  <div class="alert-box">
+    ⚠️ <strong>Важно:</strong> В марте DEV ещё работает в текущей 1С. С апреля начинается переход на платформу BAF — март это последний «чистый» месяц для критических фиксов и доходных задач в текущей конфигурации.
+  </div>
+
+  <!-- НЕДЕЛЯ 1 -->
+  <div class="period-label">Неделя 1 — Аудит + Быстрые доходные задачи</div>
+  <div class="tasks">
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Аудит конфигурации — старт, TODO-лист технического долга</div>
+        <div class="task-desc">Программист начинает фоновый аудит. Цель марта: зафиксировать реестр технического долга, расставить приоритеты. В моменты простоя — рефакторинг блоков.</div>
+        <div class="task-comment">Из бэклога: «Сначала аудит, после TODO-лист, в моменты простоя берём блок»</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-bg">Фоновый</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">Постоянно</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:20%"></div></div><div class="effort-label">МГР 20%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:30%"></div></div><div class="effort-label">DEV 30%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-card income urgent">
+      <div class="task-main">
+        <div class="task-title"><span class="fire">🔥</span>Отборы для рассылки в ТГ-боте (Постоянный клиент, Отложенный спрос, Город)</div>
+        <div class="task-desc">Кнопки автозаполнения клиентов по отборам — быстрая задача (1 день DEV). Даёт инструмент для целевых допродаж по базе прямо в марте.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-income">Доходный</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 день</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:30%"></div></div><div class="effort-label">МГР 30%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:100%"></div></div><div class="effort-label">DEV 100%</div></div>
+        </div>
+        <div class="profit">↑ Повторные визиты</div>
+      </div>
+    </div>
+
+    <div class="task-card income urgent">
+      <div class="task-main">
+        <div class="task-title"><span class="fire">🔥</span>Отчёт по исключённым работам + Отложенный спрос</div>
+        <div class="task-desc">Карточка авто фиксирует что предлагали, но клиент отказался. Отчёт позволяет консультанту видеть «горячий» отложенный спрос и возвращаться к нему при следующем визите.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-income">Доходный</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 неделя</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:40%"></div></div><div class="effort-label">МГР 40%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:80%"></div></div><div class="effort-label">DEV 80%</div></div>
+        </div>
+        <div class="profit">↑ Средний чек</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- НЕДЕЛЯ 2 -->
+  <div class="period-label">Неделя 2 — Сервисная книга (главная доходная задача марта)</div>
+  <div class="tasks">
+
+    <div class="task-card income urgent">
+      <div class="task-main">
+        <div class="task-title"><span class="fire">🔥</span>Сервисная книга — допродажа услуг и выполнение регламентов ТО</div>
+        <div class="task-desc">Набор работ по пробегу/времени последнего обслуживания. Система опрашивает клиента при записи, актуализирует статусы и предлагает консультанту что допродать. Прямое влияние на средний чек по всем 12 точкам.</div>
+        <div class="task-comment">«Нужно опросить клиента, актуализировать статусы, предлагать при следующем заезде»</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-income">Доходный</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~2 недели</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:60%"></div></div><div class="effort-label">МГР 60%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:90%"></div></div><div class="effort-label">DEV 90%</div></div>
+        </div>
+        <div class="profit">↑ Средний чек ×12 точек</div>
+      </div>
+    </div>
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">А-Банк клиент-банк — интеграция</div>
+        <div class="task-desc">Сервисная задача — убирает ручные операции по платежам. Снижает расхождения в учёте оплат.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-service">Сервисный</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 неделя</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:30%"></div></div><div class="effort-label">МГР 30%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:80%"></div></div><div class="effort-label">DEV 80%</div></div>
+        </div>
+        <div class="profit">↓ Ручных операций</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- НЕДЕЛЯ 3-4 -->
+  <div class="period-label">Неделя 3–4 — Мелкие баги + Процессный фикс (доставка) + Регламенты</div>
+  <div class="tasks">
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Мелкие баги — пакет 10–20 штук</div>
+        <div class="task-desc">Планово закрыть накопленный хвост мелких багов. Лучше в конце месяца, когда основные задачи выполнены — DEV разгружен и концентрируется на фиксах.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-bug">Баги</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 неделя</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:50%"></div></div><div class="effort-label">МГР 50%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:90%"></div></div><div class="effort-label">DEV 90%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-card income urgent">
+      <div class="task-main">
+        <div class="task-title"><span class="fire">🔥</span>Процессный фикс: автоматический расчёт стоимости доставки при закупке запчастей</div>
+        <div class="task-desc">Критический баг маржи: продавцы забывают прибавить стоимость доставки к стоимости товара — проседает маржа по всей сети. Решение: автоподстановка стоимости доставки при закупке у не-ТОП поставщиков. Задача уже есть в бэклоге, запланирована на апрель — целесообразно взять в марте.</div>
+        <div class="task-comment">Из бэклога: «Мінімізувати витрати на помилки консультантів при закупівлі запчастин» — 2–3 дня DEV</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-income">Доходный</span><span class="tag tag-bug">Баг маржи</span></div>
+        <div class="duration">2–3 дня</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:40%"></div></div><div class="effort-label">МГР 40%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:100%"></div></div><div class="effort-label">DEV 100%</div></div>
+        </div>
+        <div class="profit">↑ Маржа по всей сети</div>
+      </div>
+    </div>
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Регламент приёмки + фиксация в 1С — пилот на 2 точках</div>
+        <div class="task-desc">Менеджер описывает стандарт приёмки: что, кем и когда вносится в 1С. Чек-лист для мастера-приёмщика. Пилот — 2 точки, в Q2 — тиражирование на все 12.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-service">Процессы</span><span class="tag tag-mgr">МГР</span></div>
+        <div class="duration">~3 дня</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:80%"></div></div><div class="effort-label">МГР 80%</div></div>
+        </div>
+        <div class="profit amber">→ Стандарт работы</div>
+      </div>
+    </div>
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Итоговый отчёт марта для СОО/СЕО + roadmap Q2</div>
+        <div class="task-desc">Зафиксировать: что сделано, какой измеримый эффект. Подготовить структуру roadmap Q2 с учётом начала перехода на BAF.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-mgr">МГР</span></div>
+        <div class="duration">2 дня</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:90%"></div></div><div class="effort-label">МГР 90%</div></div>
+        </div>
+        <div class="profit amber">→ KPI: ≥85% задач в срок</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="effect-box">
+    <div class="effect-title">Ожидаемый эффект / Март</div>
+    <div class="effect-items">
+      <div class="effect-item"><div class="effect-val">↑ Чек</div><div class="effect-desc">Сервисная книга + отложенный спрос</div></div>
+      <div class="effect-item"><div class="effect-val">↑ Маржа</div><div class="effect-desc">Фикс расчёта доставки запчастей</div></div>
+      <div class="effect-item"><div class="effect-val">↓ Баги</div><div class="effect-desc">10–20 мелких багов закрыто</div></div>
+      <div class="effect-item"><div class="effect-val">+Рассылка</div><div class="effect-desc">ТГ-бот с отборами по клиентам</div></div>
+    </div>
+  </div>
+
+  <div class="kr-section">
+    <div class="kr-title">Ключевые результаты марта — для защиты</div>
+    <div class="kr-grid">
+      <div class="kr-card"><div class="kr-num">Сервис. книга</div><div class="kr-desc">Запущена — консультанты видят что допродать при каждом визите</div></div>
+      <div class="kr-card"><div class="kr-num g">↑ Маржа</div><div class="kr-desc">Автоматический расчёт доставки при закупке — баг маржи устранён</div></div>
+      <div class="kr-card"><div class="kr-num">ТГ-бот</div><div class="kr-desc">Отборы по клиентам работают, отложенный спрос виден</div></div>
+      <div class="kr-card"><div class="kr-num g">А-Банк</div><div class="kr-desc">Интеграция с клиент-банком — ручные платежи убраны</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Q2 ===== -->
+<div class="panel" id="panel-q2">
+
+  <div class="load-summary">
+    <span class="load-title">Загрузка / Q2</span>
+    <div class="load-block">
+      <div class="load-name">Менеджер — управление переходом BAF + регламенты + BI</div>
+      <div class="load-bar-wrap"><div class="load-bar-fill mgr" style="width:80%"></div></div>
+      <div class="load-pct">~80%</div>
+    </div>
+    <div class="load-block">
+      <div class="load-name">Программист 1С → BAF</div>
+      <div class="load-bar-wrap"><div class="load-bar-fill dev" style="width:80%"></div></div>
+      <div class="load-pct">~80%</div>
+    </div>
+  </div>
+
+  <div class="alert-box">
+    ⚠️ <strong>Ключевой контекст Q2:</strong> С апреля начинается переход на платформу BAF — это фоновая задача на 3 месяца. Все новые фичи разрабатываются сразу на украинском языке. DEV делит время между BAF и текущим бэклогом.
+  </div>
+
+  <!-- АПРЕЛЬ -->
+  <div class="period-label">Апрель — Старт BAF + Логика нарядов + Маржинальный контроль</div>
+  <div class="tasks">
+
+    <div class="task-card bgwork">
+      <div class="task-main">
+        <div class="task-title">Переход на платформу BAF — старт</div>
+        <div class="task-desc">Фоновая работа на весь квартал. Параллельно: украинизация — новый функционал сразу на укр. языке, при касании объекта — переводим интерфейс.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-bg">Фоновый</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">3 месяца</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:40%"></div></div><div class="effort-label">МГР 40%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:40%"></div></div><div class="effort-label">DEV 40%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-card service urgent">
+      <div class="task-main">
+        <div class="task-title"><span class="fire">🔥</span>Автоматизация статусов нарядов — починить логику</div>
+        <div class="task-desc">Анализ текущего поведения заказ-наряда, построение карты маршрута статусов. Устранение ситуации когда из заблокированного статуса можно провести наряд сразу в заказ запчастей без обновления сметы.</div>
+        <div class="task-comment">Включает закрытие «дырки с актуальностью сметы» из бэклога</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-service">Сервисный</span><span class="tag tag-income">Доходный</span></div>
+        <div class="duration">~1 неделя</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:50%"></div></div><div class="effort-label">МГР 50%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:90%"></div></div><div class="effort-label">DEV 90%</div></div>
+        </div>
+        <div class="profit">↓ Ошибки оформления нарядов</div>
+      </div>
+    </div>
+
+    <div class="task-card income">
+      <div class="task-main">
+        <div class="task-title">Механизм проверки реальной себестоимости и наценки (ручная цена)</div>
+        <div class="task-desc">Контроль маржи когда цена вставляется вручную от несистемного поставщика. Дополняет фикс доставки из марта — полное закрытие темы маржинальности на закупке.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-income">Доходный</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 неделя</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:40%"></div></div><div class="effort-label">МГР 40%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:80%"></div></div><div class="effort-label">DEV 80%</div></div>
+        </div>
+        <div class="profit">↑ Маржа — полный контроль</div>
+      </div>
+    </div>
+
+    <div class="task-card client">
+      <div class="task-main">
+        <div class="task-title">API — перенос корзины из интернет-магазина в наряд</div>
+        <div class="task-desc">По кнопке из заказа получаем товарный состав по API. Консультант не вбивает позиции вручную — ускорение оформления, меньше ошибок.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-client">Клиентский</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 месяц</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:30%"></div></div><div class="effort-label">МГР 30%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:80%"></div></div><div class="effort-label">DEV 80%</div></div>
+        </div>
+        <div class="profit">↓ Время оформления наряда</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- МАЙ -->
+  <div class="period-label">Май — BI / PowerBI + Роли и права + Объединение нарядов</div>
+  <div class="tasks">
+
+    <div class="task-card service urgent">
+      <div class="task-main">
+        <div class="task-title"><span class="fire">🔥</span>Отдельная БД (PostgreSQL) + интеграция с PowerBI</div>
+        <div class="task-desc">Создание отдельной базы данных или веб-сервиса для интеграции с PowerBI. Это фундамент прозрачности оборота для СОО/СЕО — дашборды по 12 точкам в реальном времени без ручных выгрузок.</div>
+        <div class="task-comment">Из бэклога: «Или разработка веб-сервиса для интеграции с PowerBI»</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-service">Аналитика</span><span class="tag tag-income">Доходный</span></div>
+        <div class="duration">~1 месяц</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:70%"></div></div><div class="effort-label">МГР 70%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:90%"></div></div><div class="effort-label">DEV 90%</div></div>
+        </div>
+        <div class="profit">→ Оборот онлайн по 12 точкам</div>
+      </div>
+    </div>
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Организация ролей и прав доступа для пользователей</div>
+        <div class="task-desc">Чёткие роли: кто что видит и может делать в 1С. Устраняет ситуации «работают как хотят». Основа для масштабирования — новые сотрудники получают правильные права сразу.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-service">Безопасность</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 месяц</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:60%"></div></div><div class="effort-label">МГР 60%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:70%"></div></div><div class="effort-label">DEV 70%</div></div>
+        </div>
+        <div class="profit amber">→ Регламенты работают</div>
+      </div>
+    </div>
+
+    <div class="task-card client">
+      <div class="task-main">
+        <div class="task-title">Объединение нескольких нарядов в одну финальную печатную форму</div>
+        <div class="task-desc">Клиент получает один документ при выдаче авто — даже если ремонт вёлся на разных сервисах. Снижает путаницу, повышает доверие клиента.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-client">Клиентский</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">~1 неделя</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:20%"></div></div><div class="effort-label">МГР 20%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:70%"></div></div><div class="effort-label">DEV 70%</div></div>
+        </div>
+        <div class="profit amber">↑ Клиентский опыт</div>
+      </div>
+    </div>
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Тиражирование регламентов на все 12 точек + База знаний</div>
+        <div class="task-desc">Перенести регламент приёмки (март) + новые регламенты в структурированную базу знаний. Обучение руководителей. Цель — 50% ключевых процессов доступны в базе знаний.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-mgr">МГР</span></div>
+        <div class="duration">Весь май</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:80%"></div></div><div class="effort-label">МГР 80%</div></div>
+        </div>
+        <div class="profit amber">→ Онбординг ≤60 дней</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ИЮНЬ -->
+  <div class="period-label">Июнь — Масштабирование + Автоматизация поставщиков + ТГ-бот v2</div>
+  <div class="tasks">
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Автоматизация поступления товаров от системных поставщиков (API)</div>
+        <div class="task-desc">Поставщики с API — автоприходование. Убирает ручной ввод товарных поступлений, ускоряет складской учёт. Снижает ошибки при приёмке запчастей.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-service">Сервисный</span><span class="tag tag-income">Доходный</span></div>
+        <div class="duration">~1 месяц</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:30%"></div></div><div class="effort-label">МГР 30%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:90%"></div></div><div class="effort-label">DEV 90%</div></div>
+        </div>
+        <div class="profit">↓ Ручные операции склад</div>
+      </div>
+    </div>
+
+    <div class="task-card client">
+      <div class="task-main">
+        <div class="task-title">Обновление логики и визуализации ТГ-бота</div>
+        <div class="task-desc">Редизайн и улучшение UX клиентского бота. Связка городов с подразделениями. Готовит бот к масштабированию при открытии новых точек.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-client">Клиентский</span><span class="tag tag-dev">DEV</span></div>
+        <div class="duration">1–2 месяца</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:50%"></div></div><div class="effort-label">МГР 50%</div></div>
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar dev" style="width:80%"></div></div><div class="effort-label">DEV 80%</div></div>
+        </div>
+        <div class="profit amber">↑ Клиентский опыт</div>
+      </div>
+    </div>
+
+    <div class="task-card service">
+      <div class="task-main">
+        <div class="task-title">Пакет запуска новой точки + Итоговый отчёт Q2</div>
+        <div class="task-desc">Стандартизированный чек-лист открытия: настройки 1С/BAF, права доступа, регламенты, доступ к BI. Отчёт с подтверждённым экономическим эффектом Q2 для СОО/СЕО.</div>
+      </div>
+      <div class="task-meta">
+        <div class="tags"><span class="tag tag-mgr">МГР</span></div>
+        <div class="duration">Итог квартала</div>
+        <div class="effort-row">
+          <div class="effort-item"><div class="effort-bar-wrap"><div class="effort-bar" style="width:90%"></div></div><div class="effort-label">МГР 90%</div></div>
+        </div>
+        <div class="profit amber">→ Масштабирование без хаоса</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="effect-box">
+    <div class="effect-title">Ожидаемый эффект / Q2</div>
+    <div class="effect-items">
+      <div class="effect-item"><div class="effect-val">PowerBI</div><div class="effect-desc">Оборот 12 точек онлайн без Excel</div></div>
+      <div class="effect-item"><div class="effect-val">↑ Маржа</div><div class="effect-desc">Полный контроль себестоимости закупок</div></div>
+      <div class="effect-item"><div class="effect-val">BAF</div><div class="effect-desc">Платформа в работе, старый долг убывает</div></div>
+      <div class="effect-item"><div class="effect-val">≤60дн</div><div class="effect-desc">Новый руководитель самостоятелен</div></div>
+      <div class="effect-item"><div class="effect-val">↓ Ручная</div><div class="effect-desc">Работа склада автоматизирована</div></div>
+    </div>
+  </div>
+
+  <div class="kr-section">
+    <div class="kr-title">Ключевые результаты Q2 — для защиты</div>
+    <div class="kr-grid">
+      <div class="kr-card"><div class="kr-num g">PowerBI</div><div class="kr-desc">Дашборды по 12 точкам — СОО/СЕО видят оборот онлайн</div></div>
+      <div class="kr-card"><div class="kr-num">Роли</div><div class="kr-desc">100% пользователей работают с правильными правами доступа</div></div>
+      <div class="kr-card"><div class="kr-num g">≥50%</div><div class="kr-desc">Ключевых процессов в базе знаний</div></div>
+      <div class="kr-card"><div class="kr-num">BAF</div><div class="kr-desc">Переход начат, новый функционал на украинском</div></div>
+      <div class="kr-card"><div class="kr-num g">Пакет</div><div class="kr-desc">Launch kit новой точки — готов к тиражированию</div></div>
+      <div class="kr-card"><div class="kr-num">≥85%</div><div class="kr-desc">Инициатив Q2 реализовано в сроки и бюджет</div></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>Digital Operations Roadmap · Март + Q2 2026</span>
+  <span>На основе реального бэклога 1С · 12 точек автосети</span>
+</footer>
+
+</div>
+<script>
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
